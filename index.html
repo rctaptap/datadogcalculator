@@ -3,50 +3,103 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Resumen de Costos</title>
+  <title>Calculadora de Costos</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 40px;
-      background-color: #f4f4f4;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      margin-bottom: 20px;
     }
     table {
-      border-collapse: collapse;
       width: 100%;
+      border-collapse: collapse;
       background-color: #fff;
     }
     th, td {
       border: 1px solid #ccc;
       padding: 12px;
-      text-align: left;
+      text-align: center;
     }
     th {
       background-color: #eee;
     }
-    h1 {
-      margin-bottom: 20px;
+    input[type="number"] {
+      width: 80px;
+      text-align: right;
+    }
+    .total {
+      font-weight: bold;
+      background-color: #f0f0f0;
     }
   </style>
 </head>
 <body>
-  <h1>Resumen de Costos</h1>
 
-  <table>
-    <tr><th>Producto</th><th>Servicio / Métrica</th><th>Cantidad</th><th>Precio Unitario</th><th>Total Mensual</th></tr>
-    <tr><td><strong>Infraestructura</strong></td><td>Infra Hosts</td><td>500 hosts</td><td>$14.60 por host</td><td>$7,300.00</td></tr>
-    <tr><td><strong>APM</strong></td><td>APM Hosts</td><td>70 hosts</td><td>$31.00 por host</td><td>$2,170.00</td></tr>
-    <tr><td></td><td>Ingested Spans</td><td>1 GB</td><td>$0.10 por GB</td><td>$0.10</td></tr>
-    <tr><td></td><td>Indexed Spans</td><td>1M</td><td>$1.70 por millón</td><td>$1.70</td></tr>
-    <tr><td><strong>Profiler</strong></td><td>Profiled Hosts</td><td>1 host</td><td>$19.00 por host</td><td>$19.00</td></tr>
-    <tr><td><strong>Logs</strong></td><td>Indexed Logs (30 días)</td><td>973M</td><td>$2.50 por millón</td><td>$2,432.60</td></tr>
-  </table>
+<h1>🧮 Calculadora de Costos Mensuales</h1>
 
-  <h2>Comparativa de Retención de Logs</h2>
-  <table>
-    <tr><th>Precio por millón</th><th>Costo Total</th></tr>
-    <tr><td>$3.75</td><td>$262,500.00</td></tr>
-    <tr><td>$0.80</td><td>$56,000.00</td></tr>
-    <tr><td><strong>Ahorro</strong></td><td><strong>$206,500.00</strong></td></tr>
-  </table>
+<table>
+  <thead>
+    <tr>
+      <th>Servicio</th>
+      <th>Cantidad</th>
+      <th>Precio Unitario (USD)</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody id="cost-table">
+    <tr>
+      <td>Infra Hosts</td>
+      <td><input type="number" id="infraQty" value="500" onchange="updateTotals()"></td>
+      <td><input type="number" id="infraPrice" value="14.6" step="0.01" onchange="updateTotals()"></td>
+      <td id="infraTotal" class="total">$0.00</td>
+    </tr>
+    <tr>
+      <td>APM Hosts</td>
+      <td><input type="number" id="apmQty" value="70" onchange="updateTotals()"></td>
+      <td><input type="number" id="apmPrice" value="31.0" step="0.01" onchange="updateTotals()"></td>
+      <td id="apmTotal" class="total">$0.00</td>
+    </tr>
+    <tr>
+      <td>Indexed Logs (millones)</td>
+      <td><input type="number" id="logsQty" value="973" onchange="updateTotals()"></td>
+      <td><input type="number" id="logsPrice" value="2.5" step="0.01" onchange="updateTotals()"></td>
+      <td id="logsTotal" class="total">$0.00</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="3" class="total">Total Mensual</td>
+      <td id="grandTotal" class="total">$0.00</td>
+    </tr>
+  </tfoot>
+</table>
+
+<script>
+function updateTotals() {
+  const infraQty = parseFloat(document.getElementById('infraQty').value || 0);
+  const infraPrice = parseFloat(document.getElementById('infraPrice').value || 0);
+  const apmQty = parseFloat(document.getElementById('apmQty').value || 0);
+  const apmPrice = parseFloat(document.getElementById('apmPrice').value || 0);
+  const logsQty = parseFloat(document.getElementById('logsQty').value || 0);
+  const logsPrice = parseFloat(document.getElementById('logsPrice').value || 0);
+
+  const infraTotal = infraQty * infraPrice;
+  const apmTotal = apmQty * apmPrice;
+  const logsTotal = logsQty * logsPrice;
+
+  document.getElementById('infraTotal').textContent = `$${infraTotal.toFixed(2)}`;
+  document.getElementById('apmTotal').textContent = `$${apmTotal.toFixed(2)}`;
+  document.getElementById('logsTotal').textContent = `$${logsTotal.toFixed(2)}`;
+
+  const grandTotal = infraTotal + apmTotal + logsTotal;
+  document.getElementById('grandTotal').textContent = `$${grandTotal.toFixed(2)}`;
+}
+
+window.onload = updateTotals;
+</script>
+
 </body>
 </html>
